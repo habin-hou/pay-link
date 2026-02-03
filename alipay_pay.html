@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>唤醒支付宝支付</title>
+    <script>
+        // 支付宝Scheme核心链接，通过官方通用参数封装原支付链接
+        const alipayScheme = "alipays://platformapi/startapp?appId=20000067&url=" + encodeURIComponent("https://life.qujie365.com/smpay/unionpay/index.html?mark=TH&qrcode=TH80000020958013797128094");
+        const originalUrl = "https://life.qujie365.com/smpay/unionpay/index.html?mark=TH&qrcode=TH80000020958013797128094";
+
+        // 双重唤醒逻辑，适配iOS兼容性
+        function wakeAlipay() {
+            // 首次尝试直接唤醒
+            window.location.href = alipayScheme;
+            // 1.5秒后检测是否唤醒成功，失败则跳转原页面并提示
+            setTimeout(() => {
+                const confirmJump = confirm("支付宝唤醒失败，是否跳转至原支付页面？");
+                if (confirmJump) {
+                    window.location.href = originalUrl;
+                }
+            }, 1500);
+        }
+        // 页面加载立即执行唤醒
+        window.onload = wakeAlipay;
+    </script>
+</head>
+<body style="margin: 0; padding: 20px;">
+    <button onclick="wakeAlipay()" style="width:100%; height: 60px; font-size: 20px; background-color: #108ee9; color: white; border: none; border-radius: 8px; margin-top: 50px;">
+        点击唤醒支付宝支付
+    </button>
+    <div style="margin-top: 30px; font-size: 16px; color: #666; text-align: center;">
+        若未自动跳转，请点击上方按钮
+    </div>
+</body>
+</html>
