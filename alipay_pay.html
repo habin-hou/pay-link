@@ -1,36 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>唤醒支付宝支付</title>
-    <script>
-        // 支付宝Scheme核心链接，通过官方通用参数封装原支付链接
-        const alipayScheme = "alipays://platformapi/startapp?appId=20000067&url=" + encodeURIComponent("https://life.qujie365.com/smpay/unionpay/index.html?mark=TH&qrcode=TH80000020958013797128094");
-        const originalUrl = "https://life.qujie365.com/smpay/unionpay/index.html?mark=TH&qrcode=TH80000020958013797128094";
-
-        // 双重唤醒逻辑，适配iOS兼容性
-        function wakeAlipay() {
-            // 首次尝试直接唤醒
-            window.location.href = alipayScheme;
-            // 1.5秒后检测是否唤醒成功，失败则跳转原页面并提示
-            setTimeout(() => {
-                const confirmJump = confirm("支付宝唤醒失败，是否跳转至原支付页面？");
-                if (confirmJump) {
-                    window.location.href = originalUrl;
-                }
-            }, 1500);
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>立即支付</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: #f5f7fa; 
+            color: #333;
+            padding: 20px;
         }
-        // 页面加载立即执行唤醒
-        window.onload = wakeAlipay;
-    </script>
+        /* 加载动效 */
+        .loading { 
+            font-size: 18px; 
+            margin-bottom: 40px; 
+            display: flex;
+            align-items: center;
+        }
+        .loading::before {
+            content: "";
+            width: 20px;
+            height: 20px;
+            border: 2px solid #007aff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            margin-right: 10px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* 支付宝蓝美化按钮 */
+        .pay-btn {
+            display: inline-block;
+            padding: 14px 48px;
+            background: linear-gradient(135deg, #007aff, #0091ff);
+            color: #fff !important;
+            font-size: 17px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            min-width: 280px;
+        }
+        .pay-btn:hover {
+            background: linear-gradient(135deg, #0066cc, #0080e6);
+            box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
+            transform: translateY(-2px);
+        }
+        .pay-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(0, 122, 255, 0.3);
+        }
+        .tip {
+            font-size: 14px;
+            color: #999;
+            margin-top: 24px;
+            text-align: center;
+        }
+    </style>
 </head>
-<body style="margin: 0; padding: 20px;">
-    <button onclick="wakeAlipay()" style="width:100%; height: 60px; font-size: 20px; background-color: #108ee9; color: white; border: none; border-radius: 8px; margin-top: 50px;">
-        点击唤醒支付宝支付
-    </button>
-    <div style="margin-top: 30px; font-size: 16px; color: #666; text-align: center;">
-        若未自动跳转，请点击上方按钮
-    </div>
+<body>
+    <div class="loading">正在跳转支付页面...</div>
+    <a id="payLink" class="pay-btn" href="">立即支付</a>
+    <div class="tip">若未自动跳转，点击上方按钮手动支付</div>
+
+    <script>
+        // 目标支付链接（直接替换qrcode/mark即可更新）
+        const TARGET_URL = "https://life.qujie365.com/smpay/unionpay/index.html?mark=TH&qrcode=TH80000020958013797128094";
+        const payLink = document.getElementById('payLink');
+        payLink.href = TARGET_URL;
+
+        // 100ms后自动跳转，兼容所有浏览器
+        setTimeout(() => {
+            window.location.href = TARGET_URL;
+        }, 100);
+
+        // 按钮点击兼容逻辑
+        payLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.open(TARGET_URL, '_self');
+        });
+    </script>
 </body>
 </html>
